@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getCategory } from '../../core/categories'
+import { paintedStitchCount } from '../../core/colors'
 import { widthForStitches } from '../../core/gauge'
 import { STITCHES } from '../../core/stitches'
 import { formatLength, unitLabel } from '../../core/units'
@@ -14,6 +15,7 @@ import {
   Panel,
   ProgressBar,
   SaveIndicator,
+  Select,
   StatusPill,
   Surface,
   Tabs,
@@ -25,13 +27,22 @@ import { useProject } from '../projects/useProjects'
 import { useProjectEditor } from '../projects/useProjectEditor'
 import { PalettePanel } from '../studio/PalettePanel'
 import { CalculationTable } from './CalculationTable'
+import { ChartEditor } from './ChartEditor'
 import { GaugePanel } from './GaugePanel'
 import { PatternSections } from './PatternSections'
 import { SizePanel } from './SizePanel'
 import { usePatternStudio } from './usePatternStudio'
 import './PatternStudioPage.css'
 
-type Step = 'gauge' | 'measurements' | 'size' | 'constraints' | 'generate' | 'calculations' | 'pattern'
+type Step =
+  | 'gauge'
+  | 'measurements'
+  | 'size'
+  | 'constraints'
+  | 'generate'
+  | 'calculations'
+  | 'pattern'
+  | 'chart'
 
 export function PatternStudioPage() {
   const { settings } = useSettings()
@@ -82,10 +93,19 @@ function EditorContent({ project, status, lastSavedAt, update, saveNow }: Conten
   const units = settings.units
   const studio = usePatternStudio(project, update)
   const [step, setStep] = useState<Step>('gauge')
+  const [brushColorId, setBrushColorId] = useState<string | null>(null)
+  const [chartSectionId, setChartSectionId] = useState<string | null>(null)
 
   const category = getCategory(project.category)
   const missing = studio.plan.warnings.length
   const readyToGenerate = studio.plan.pattern.sections.length > 0
+  const painted = paintedStitchCount(project.pattern)
+
+  // The chart works on one section at a time; the first is the obvious default.
+  const chartSection =
+    project.pattern.sections.find((section) => section.id === chartSectionId) ??
+    project.pattern.sections[0] ??
+    null
 
   const steps: TabItem<Step>[] = [
     { value: 'gauge', label: 'Échantillon' },
@@ -102,6 +122,11 @@ function EditorContent({ project, status, lastSavedAt, update, saveNow }: Conten
       value: 'pattern',
       label: 'Motif',
       badge: studio.stats.rows > 0 ? String(studio.stats.rows) : undefined,
+    },
+    {
+      value: 'chart',
+      label: 'Plan',
+      badge: painted > 0 ? String(painted) : undefined,
     },
   ]
 
@@ -534,13 +559,102 @@ function EditorContent({ project, status, lastSavedAt, update, saveNow }: Conten
                   <Panel title="Couleurs" hint="Palette du projet">
                     <PalettePanel project={project} update={update} />
                     <p className="cs-editor__note">
-                      Posez les couleurs rang par rang ici, ou par sections et rayures dans
-                      l’atelier 3D.
+                      Posez les couleurs rang par rang ici, maille par maille dans l’étape « Plan »,
+                      ou par sections et rayures dans l’atelier 3D.
                     </p>
                   </Panel>
                 </Surface>
               </aside>
             </div>
+          </div>
+        )}
+
+        {step === 'chart' && (
+          <div className="cs-editor__chart">
+            <Surface padding="lg">
+              <div className="cs-editor__pattern-head">
+                <div>
+                  <h2 className="cs-editor__heading">
+                    Plan de couleurs
+                    {painted > 0 && (
+                      <StatusPill tone="ok">{`${painted} mailles peintes`}</StatusPill>
+                    )}
+                  </h2>
+                  <p className="cs-editor__lede">
+                    Une case par maille. Peignez le motif que vous voulez : il apparaît tel quel sur
+                    le modèle 3D, maille par maille.
+                  </p>
+                </div>
+
+                {chartSection && (
+                  <div className="cs-editor__chart-tools">
+                    <Field label="Section">
+                      {({ id }) => (
+                        <Select<string>
+                          id={id}
+                          value={chartSection.id}
+                          options={project.pattern.sections.map((section) => ({
+                            value: section.id,
+                            label: `${section.name} (${section.rows.length} rangs)`,
+                          }))}
+                          onValueChange={setChartSectionId}
+                        />
+                      )}
+                    </Field>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      icon="trash"
+                      onClick={() => studio.clearChart(chartSection.id)}
+                    >
+                      Effacer cette section
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              {!chartSection ? (
+                <EmptyState
+                  icon="pattern"
+                  title="Aucun rang à colorier"
+                  description="Générez le motif : le plan se construit à partir de ses mailles."
+                  action={
+                    <Button
+                      variant="primary"
+                      icon="pattern"
+                      onClick={studio.apply}
+                      disabled={!readyToGenerate}
+                    >
+                      Générer le motif
+                    </Button>
+                  }
+                />
+              ) : (
+                <div className="cs-editor__chart-body">
+                  <ChartEditor
+                    section={chartSection}
+                    yarn={project.yarn}
+                    selectedColorId={brushColorId}
+                    onPaint={(edits, colorId) =>
+                      studio.paintChart(chartSection.id, edits, colorId)
+                    }
+                  />
+
+                  <aside className="cs-editor__chart-aside">
+                    <Surface padding="none">
+                      <Panel title="Pinceau" hint="Cliquez une couleur, puis peignez">
+                        <PalettePanel
+                          project={project}
+                          update={update}
+                          selectedId={brushColorId}
+                          onSelect={setBrushColorId}
+                        />
+                      </Panel>
+                    </Surface>
+                  </aside>
+                </div>
+              )}
+            </Surface>
           </div>
         )}
       </div>

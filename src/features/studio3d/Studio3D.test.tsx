@@ -90,18 +90,43 @@ describe('3D Studio', () => {
     await openStudio3DWith('bag', false)
 
     expect(await screen.findByText('Volume depuis les mesures')).toBeDefined()
-    expect(screen.getByText(/Aucun motif généré/)).toBeDefined()
+    // Said twice on purpose: once in the model panel, once where it explains
+    // why the stitches cannot be placed.
+    expect(screen.getAllByText(/Aucun motif généré/).length).toBeGreaterThan(0)
   })
 
-  it('keeps the stitch controls behind a collapsed panel until asked', async () => {
+  it('puts the stitch controls up front, because seeing the stitches is the point', async () => {
     await openStudio3DWith('bag', true)
 
-    expect(screen.queryByRole('switch', { name: /Relief des mailles/ })).toBeNull()
+    // No panel to open first: the switch and the render mode are visible.
+    expect(await screen.findByRole('switch', { name: /Montrer les mailles/ })).toBeDefined()
+    expect(screen.getByRole('radiogroup', { name: 'Rendu des mailles' })).toBeDefined()
+    expect(screen.getByLabelText('Taille des mailles')).toBeDefined()
+  })
 
-    await openPanel('Aspect des mailles')
+  it('switches between real stitch geometry and painted relief', async () => {
+    await openStudio3DWith('bag', true)
 
-    expect(screen.getByRole('switch', { name: /Relief des mailles/ })).toBeDefined()
+    const modes = await screen.findByRole('radiogroup', { name: 'Rendu des mailles' })
+    expect(within(modes).getByRole('radio', { name: 'Mailles en volume' }).getAttribute('aria-checked')).toBe('true')
+
+    fireEvent.click(within(modes).getByRole('radio', { name: 'Relief peint' }))
+
+    await waitFor(() =>
+      expect(screen.getByText(/Le relief est peint sur une surface lisse/)).toBeDefined(),
+    )
+    // The slider renames itself, because it no longer scales real stitches.
     expect(screen.getByLabelText('Finesse du grain')).toBeDefined()
+  })
+
+  it('hides the stitch options when the stitches are switched off', async () => {
+    await openStudio3DWith('bag', true)
+
+    fireEvent.click(await screen.findByRole('switch', { name: /Montrer les mailles/ }))
+
+    await waitFor(() =>
+      expect(screen.queryByRole('radiogroup', { name: 'Rendu des mailles' })).toBeNull(),
+    )
   })
 
   it('cannot capture a preview without WebGL, and the button says so', async () => {

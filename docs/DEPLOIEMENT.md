@@ -13,7 +13,9 @@ vercel              # aperçu
 vercel --prod       # mise en ligne
 ```
 
-`vercel.json` fait trois choses, toutes nécessaires :
+`vercel.json` fait trois choses, toutes nécessaires. Le fichier lui-même ne contient aucun
+commentaire : Vercel refuse toute clé qu'il ne connaît pas (`headers[0]` should NOT have additional
+property `comment`). Les explications vivent donc ici.
 
 | Réglage | Pourquoi |
 | --- | --- |

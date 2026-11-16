@@ -240,7 +240,7 @@ export class Viewport {
     this.setQuality(three.quality)
 
     this.requestRender()
-    return { triangleCount: this.model.triangleCount }
+    return { triangleCount: this.model.triangleCount, stitches: this.model.stitches }
   }
 
   /** Colour, thickness and stitch detail without rebuilding the geometry. */

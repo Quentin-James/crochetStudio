@@ -1,5 +1,13 @@
 import { useCallback, useMemo } from 'react'
-import { paintRow, paintSection, paintStripes, type StripeOptions } from '../../core/colors'
+import {
+  clearStitchColors,
+  paintRow,
+  paintSection,
+  paintStitches,
+  paintStripes,
+  type StitchEdit,
+  type StripeOptions,
+} from '../../core/colors'
 import {
   createRow,
   createSection,
@@ -235,6 +243,21 @@ export function usePatternStudio(project: Project, update: (patch: ProjectPatch)
     [commitPattern, project.pattern],
   )
 
+  /** A whole chart gesture — a drag across the grid — in one change. */
+  const paintChart = useCallback(
+    (sectionId: Id, edits: readonly StitchEdit[], colorId: Id | null) => {
+      commitPattern(paintStitches(project.pattern, sectionId, edits, colorId))
+    },
+    [commitPattern, project.pattern],
+  )
+
+  const clearChart = useCallback(
+    (sectionId: Id) => {
+      commitPattern(clearStitchColors(project.pattern, sectionId))
+    },
+    [commitPattern, project.pattern],
+  )
+
   const stats = useMemo(
     () => ({
       rows: totalRows(project.pattern),
@@ -251,6 +274,8 @@ export function usePatternStudio(project: Project, update: (patch: ProjectPatch)
     setSectionColor,
     setRowColor,
     applyStripes,
+    paintChart,
+    clearChart,
     setRowStitchCount,
     setRowStitch,
     setRowNote,

@@ -306,6 +306,32 @@
   top: 0;
 }
 
+/* ---- Chart step ---------------------------------------------------------- */
+
+.cs-editor__chart-tools {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.cs-editor__chart-tools > :first-child {
+  min-width: 220px;
+}
+
+.cs-editor__chart-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: var(--space-4);
+  align-items: start;
+  margin-top: var(--space-4);
+}
+
+.cs-editor__chart-aside {
+  position: sticky;
+  top: 0;
+}
+
 /* ---- Row colour chooser -------------------------------------------------- */
 
 .cs-color-chooser {
@@ -348,11 +374,13 @@
 
 @media (max-width: 1179px) {
   .cs-editor__columns,
-  .cs-editor__pattern-body {
+  .cs-editor__pattern-body,
+  .cs-editor__chart-body {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .cs-editor__pattern-aside {
+  .cs-editor__pattern-aside,
+  .cs-editor__chart-aside {
     position: static;
   }
 }

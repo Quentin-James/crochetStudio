@@ -74,7 +74,7 @@ describe('vertex colours', () => {
     model.dispose()
   })
 
-  it('gives every geometry a colour attribute, since the material reads one', () => {
+  it('gives every yarn-material mesh a colour attribute, since that material reads one', () => {
     const model = buildModel(
       spec({
         closedBase: true,
@@ -85,9 +85,19 @@ describe('vertex colours', () => {
       DEFAULT_THREE,
     )
 
-    // A mesh without vertex colours renders black when the material expects them.
+    // A mesh without vertex colours renders black when the material expects
+    // them — which is exactly the bug this file exists for. The instanced stitch
+    // mesh is the one exception: it carries a colour per instance instead.
     for (const child of model.group.children) {
       const mesh = child as THREE.Mesh
+
+      if ((mesh as THREE.InstancedMesh).isInstancedMesh) {
+        expect((mesh as THREE.InstancedMesh).instanceColor).toBeTruthy()
+        expect((mesh.material as THREE.MeshStandardMaterial).vertexColors).toBe(false)
+        continue
+      }
+
+      expect(mesh.material).toBe(model.material)
       expect(mesh.geometry.getAttribute('color')).toBeDefined()
     }
 

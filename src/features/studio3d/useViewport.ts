@@ -37,6 +37,7 @@ export function useViewport({
 
   const [supported] = useState(() => Viewport.isSupported())
   const [triangleCount, setTriangleCount] = useState(0)
+  const [stitches, setStitches] = useState({ drawn: 0, requested: 0, capped: false })
   const [failure, setFailure] = useState<string | null>(null)
 
   poseCallbackRef.current = onPoseSettled
@@ -84,8 +85,9 @@ export function useViewport({
     const viewport = viewportRef.current
     if (!viewport) return
 
-    const { triangleCount: triangles } = viewport.setModel(spec, yarn, three)
-    setTriangleCount(triangles)
+    const built = viewport.setModel(spec, yarn, three)
+    setTriangleCount(built.triangleCount)
+    setStitches(built.stitches)
 
     // Restore the saved camera once per project; afterwards the user is in charge.
     if (restoredForRef.current !== projectId) {
@@ -99,10 +101,12 @@ export function useViewport({
         })
       }
     }
-    // `yarn` and `three` are read here but intentionally not dependencies: their
-    // changes are applied by the appearance effect below without a rebuild.
+    // `yarn` and the rest of `three` are read here but are not dependencies:
+    // those changes are applied by the appearance effect below. The two options
+    // listed *are* dependencies, because they decide whether the stitches exist
+    // as geometry at all — that cannot be changed without rebuilding.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [spec, projectId])
+  }, [spec, projectId, three.stitchRender, three.showStitchDetail])
 
   // Appearance only: no geometry work.
   useEffect(() => {
@@ -161,6 +165,7 @@ export function useViewport({
     supported,
     failure,
     triangleCount,
+    stitches,
     setPreset,
     fit,
     zoomBy,

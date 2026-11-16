@@ -46,6 +46,12 @@ async function generate() {
   await waitFor(() => expect(screen.getAllByText(/rangs/).length).toBeGreaterThan(0))
 }
 
+/** Adds a palette colour and arms it for painting. */
+async function addColour() {
+  fireEvent.click(await screen.findByRole('button', { name: /Ajouter une couleur/ }))
+  await screen.findByTitle(/Couleur 1/)
+}
+
 describe('Pattern Studio', () => {
   it('asks for a project when none is open', async () => {
     window.history.pushState({}, '', '/pattern')
@@ -59,6 +65,7 @@ describe('Pattern Studio', () => {
 
     expect(await screen.findByText('Robe du dimanche')).toBeDefined()
     expect(await screen.findByText(/maille\(s\) par cm/)).toBeDefined()
+
     // The step list is the workflow, in order.
     const steps = screen.getAllByRole('tab').map((tab) => tab.textContent)
     expect(steps).toEqual([
@@ -69,6 +76,7 @@ describe('Pattern Studio', () => {
       expect.stringContaining('Génération'),
       expect.stringContaining('Calculs'),
       expect.stringContaining('Motif'),
+      expect.stringContaining('Plan'),
     ])
   })
 
@@ -198,6 +206,55 @@ describe('Pattern Studio', () => {
 
       await goToStep('Calculs')
       expect(await screen.findByRole('button', { name: /80/ })).toBeDefined()
+    })
+  })
+
+  describe('the colour chart', () => {
+    it('paints stitches with the armed colour and counts them', async () => {
+      await openStudioWith('Écharpe', 'accessory')
+      await generate()
+      await goToStep('Plan')
+      await addColour()
+
+      const chart = await screen.findByRole('img', { name: /Plan de couleurs/ })
+
+      // jsdom gives every element a zero-sized box, so a press lands on the
+      // first cell: row 1, stitch 1. That is enough to prove the wiring.
+      fireEvent.pointerDown(chart, { clientX: 1, clientY: 1 })
+      fireEvent.pointerUp(chart)
+
+      // The step badge counts painted stitches, so it is the honest witness.
+      await waitFor(() => {
+        expect(screen.getByRole('tab', { name: /Plan/ }).textContent).toMatch(/Plan\s*1/)
+      })
+    })
+
+    it('clears a section back to its row colours', async () => {
+      await openStudioWith('Écharpe', 'accessory')
+      await generate()
+      await goToStep('Plan')
+      await addColour()
+
+      const chart = await screen.findByRole('img', { name: /Plan de couleurs/ })
+      fireEvent.pointerDown(chart, { clientX: 1, clientY: 1 })
+      fireEvent.pointerUp(chart)
+
+      await waitFor(() =>
+        expect(screen.getByRole('tab', { name: /Plan/ }).textContent).toMatch(/Plan\s*1/),
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: /Effacer cette section/ }))
+
+      await waitFor(() =>
+        expect(screen.getByRole('tab', { name: /Plan/ }).textContent).not.toMatch(/Plan\s*1/),
+      )
+    })
+
+    it('asks for a pattern before offering a chart', async () => {
+      await openStudioWith('Écharpe', 'accessory')
+      await goToStep('Plan')
+
+      expect(await screen.findByText('Aucun rang à colorier')).toBeDefined()
     })
   })
 

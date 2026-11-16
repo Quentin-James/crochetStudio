@@ -4,7 +4,7 @@ import { getCategory } from '../../core/categories'
 import { colorsInUse } from '../../core/colors'
 import { STITCHES, YARN_WEIGHTS } from '../../core/stitches'
 import { formatLength, unitLabel } from '../../core/units'
-import type { Id, Project, RenderQuality, ThreeConfig } from '../../core/types'
+import type { Id, Project, RenderQuality, StitchRender, ThreeConfig } from '../../core/types'
 import { buildModelSpec } from '../../three/model/silhouette'
 import type { PresetView } from '../../three/scene/Viewport'
 import {
@@ -51,6 +51,11 @@ const BACKGROUND_SEGMENTS: Segment<ThreeConfig['backgroundTone']>[] = [
 const QUALITY_SEGMENTS: Segment<RenderQuality>[] = [
   { value: 'standard', label: 'Fluide' },
   { value: 'high', label: 'Détaillée' },
+]
+
+const STITCH_RENDER_SEGMENTS: Segment<StitchRender>[] = [
+  { value: 'geometry', label: 'Mailles en volume' },
+  { value: 'texture', label: 'Relief peint' },
 ]
 
 export function Studio3DPage() {
@@ -353,26 +358,66 @@ function Studio3DContent({ project, status, lastSavedAt, update, saveNow }: Cont
               )}
             </Panel>
 
-            <Panel title="Aspect des mailles" collapsible defaultOpen={false}>
+            <Panel
+              title="Aspect des mailles"
+              hint="Comment le tissu est dessiné"
+              aside={
+                viewport.stitches.drawn > 0 ? (
+                  <StatusPill tone="ok" compact>
+                    {`${viewport.stitches.drawn.toLocaleString('fr-FR')} mailles`}
+                  </StatusPill>
+                ) : undefined
+              }
+            >
               <Switch
                 checked={three.showStitchDetail}
-                label="Relief des mailles"
+                label="Montrer les mailles"
                 hint={
                   spec.stitchesAround > 0
-                    ? `Grain calculé pour ${spec.stitchesAround} mailles sur le tour`
-                    : 'Grain par défaut tant qu’aucun motif n’est généré'
+                    ? `${spec.stitchesAround} mailles sur le tour, d’après votre échantillon`
+                    : 'Aucun motif généré : les mailles ne peuvent pas être placées'
                 }
                 onCheckedChange={(showStitchDetail) => setThree({ showStitchDetail })}
               />
-              <Slider
-                label="Finesse du grain"
-                value={three.stitchScale}
-                min={0.5}
-                max={2}
-                step={0.1}
-                display={`${three.stitchScale.toFixed(1).replace('.', ',')} ×`}
-                onValueChange={(stitchScale) => setThree({ stitchScale })}
-              />
+
+              {three.showStitchDetail && (
+                <>
+                  <div className="cs-studio3d__field">
+                    <span className="cs-studio3d__field-label">Rendu</span>
+                    <SegmentedControl
+                      label="Rendu des mailles"
+                      size="sm"
+                      value={three.stitchRender}
+                      segments={STITCH_RENDER_SEGMENTS}
+                      onValueChange={(stitchRender) => setThree({ stitchRender })}
+                    />
+                  </div>
+
+                  <p className="cs-studio3d__hint">
+                    {three.stitchRender === 'geometry'
+                      ? 'Chaque maille est un petit volume posé sur le tissu : on les voit en relief et chacune peut avoir sa couleur.'
+                      : 'Le relief est peint sur une surface lisse : plus léger, mais les mailles ne sont pas de vrais volumes.'}
+                  </p>
+
+                  {three.stitchRender === 'geometry' && viewport.stitches.capped && (
+                    <p className="cs-studio3d__notice">
+                      {`Ce motif compte ${viewport.stitches.requested.toLocaleString('fr-FR')} mailles. ` +
+                        `${viewport.stitches.drawn.toLocaleString('fr-FR')} sont dessinées, réparties sur toute la pièce, ` +
+                        'pour que la vue reste fluide.'}
+                    </p>
+                  )}
+
+                  <Slider
+                    label={three.stitchRender === 'geometry' ? 'Taille des mailles' : 'Finesse du grain'}
+                    value={three.stitchScale}
+                    min={0.5}
+                    max={2}
+                    step={0.1}
+                    display={`${three.stitchScale.toFixed(1).replace('.', ',')} ×`}
+                    onValueChange={(stitchScale) => setThree({ stitchScale })}
+                  />
+                </>
+              )}
             </Panel>
 
             <Panel title="Environnement" collapsible defaultOpen={false}>
@@ -443,6 +488,14 @@ function Studio3DContent({ project, status, lastSavedAt, update, saveNow }: Cont
                 <div>
                   <dt>Anneaux</dt>
                   <dd>{spec.rings.length}</dd>
+                </div>
+                <div>
+                  <dt>Mailles dessinées</dt>
+                  <dd>
+                    {viewport.stitches.drawn > 0
+                      ? viewport.stitches.drawn.toLocaleString('fr-FR')
+                      : '—'}
+                  </dd>
                 </div>
                 <div>
                   <dt>Triangles</dt>
