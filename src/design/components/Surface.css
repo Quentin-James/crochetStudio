@@ -1,0 +1,34 @@
+.cs-surface {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-subtle);
+}
+
+.cs-surface--raised {
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-sm);
+}
+
+.cs-surface--sunken {
+  background: var(--surface-sunken);
+  box-shadow: var(--shadow-inset);
+  border-color: var(--border-strong);
+}
+
+.cs-surface--accent {
+  background: linear-gradient(170deg, var(--pink-soft), var(--cream-soft));
+  border-color: var(--beige);
+  box-shadow: var(--shadow-sm);
+}
+
+.cs-surface--pad-none {
+  padding: 0;
+}
+.cs-surface--pad-sm {
+  padding: var(--space-3);
+}
+.cs-surface--pad-md {
+  padding: var(--space-5);
+}
+.cs-surface--pad-lg {
+  padding: var(--space-6);
+}

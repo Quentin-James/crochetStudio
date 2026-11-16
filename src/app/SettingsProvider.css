@@ -1,0 +1,29 @@
+.cs-boot {
+  display: grid;
+  place-content: center;
+  gap: var(--space-3);
+  height: 100%;
+  padding: var(--space-6);
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.cs-boot--error {
+  justify-items: center;
+}
+
+.cs-boot--error h1 {
+  font-size: var(--text-xl);
+  max-width: 34ch;
+}
+
+.cs-boot--error p {
+  max-width: 50ch;
+  line-height: var(--leading-snug);
+}
+
+.cs-boot__detail {
+  font-family: ui-monospace, 'SFMono-Regular', 'Cascadia Mono', monospace;
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}

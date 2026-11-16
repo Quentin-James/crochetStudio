@@ -1,0 +1,81 @@
+.cs-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  padding: var(--space-2) var(--space-3);
+  background: rgba(253, 250, 246, 0.92);
+  border-top: 1px solid var(--border-subtle);
+  backdrop-filter: blur(6px);
+}
+
+.cs-toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-subtle);
+}
+
+.cs-toolbar__separator {
+  width: 1px;
+  height: 22px;
+  background: var(--border-strong);
+}
+
+.cs-toolbar__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  /* 36px keeps the toolbar slim; it is still comfortable with a finger because
+     the hit area is padded by the group. */
+  min-height: 36px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    background-color var(--duration-fast) var(--ease-soft),
+    color var(--duration-fast) var(--ease-soft);
+}
+
+.cs-toolbar__button--icon {
+  width: 36px;
+  padding: 0;
+}
+
+.cs-toolbar__button:hover:not(:disabled) {
+  background: var(--surface-raised);
+  color: var(--text-primary);
+}
+
+.cs-toolbar__button--on {
+  background: var(--pink-soft);
+  color: var(--accent-strong);
+}
+
+.cs-toolbar__button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (max-width: 759px) {
+  .cs-toolbar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .cs-toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cs-toolbar__group {
+    flex: 0 0 auto;
+  }
+}

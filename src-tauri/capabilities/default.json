@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Permissions de la fenêtre principale. Le minimum : l'application n'utilise que des API du navigateur.",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}

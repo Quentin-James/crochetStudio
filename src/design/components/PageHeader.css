@@ -1,0 +1,52 @@
+.cs-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-6);
+}
+
+.cs-page-header__text {
+  max-width: 56ch;
+}
+
+.cs-page-header__eyebrow {
+  margin-bottom: var(--space-2);
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cs-page-header__title {
+  font-size: var(--text-3xl);
+}
+
+.cs-page-header__lede {
+  margin-top: var(--space-3);
+  color: var(--text-secondary);
+  font-size: var(--text-md);
+  line-height: var(--leading-snug);
+}
+
+.cs-page-header__actions {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 760px) {
+  .cs-page-header {
+    margin-bottom: var(--space-5);
+  }
+
+  .cs-page-header__title {
+    font-size: var(--text-2xl);
+  }
+
+  .cs-page-header__lede {
+    font-size: var(--text-base);
+  }
+}

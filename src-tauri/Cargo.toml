@@ -1,0 +1,27 @@
+[package]
+name = "crochet-studio"
+version = "0.1.0"
+description = "Crochet Studio — atelier de création au crochet"
+authors = ["Quentin"]
+edition = "2021"
+rust-version = "1.77.2"
+
+# The binary is a thin wrapper around the library, which is the shape Tauri 2
+# expects: it is what lets the same code be reused for a mobile target later.
+[lib]
+name = "crochet_studio_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+
+# A desktop build of a local-first app has no reason to be slow or large.
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

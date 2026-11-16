@@ -1,0 +1,327 @@
+/*
+ * The 3D studio is a workspace, not a document: the viewport takes the room, the
+ * properties sit in a fixed column beside it, and the whole thing fills the
+ * screen instead of scrolling as a page.
+ */
+
+.cs-studio3d {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: var(--space-4);
+  /* Fill the shell's content area, minus its padding. */
+  min-height: calc(100vh - 2 * var(--space-7) - var(--safe-top));
+}
+
+.cs-studio3d--empty {
+  display: block;
+}
+
+/* ---- Header -------------------------------------------------------------- */
+
+.cs-studio3d__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+}
+
+.cs-studio3d__eyebrow {
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cs-studio3d__title {
+  margin-top: var(--space-1);
+  font-size: var(--text-2xl);
+  overflow-wrap: anywhere;
+}
+
+.cs-studio3d__facts {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-top: var(--space-2);
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+}
+
+.cs-studio3d__facts > span:not(:last-child)::after {
+  content: '·';
+  margin-left: var(--space-3);
+  color: var(--border-strong);
+}
+
+.cs-studio3d__header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* ---- Body ---------------------------------------------------------------- */
+
+.cs-studio3d__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: var(--space-4);
+  min-height: 0;
+}
+
+.cs-studio3d__stage {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 420px;
+  border-radius: var(--radius-2xl);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.cs-studio3d__canvas-wrap {
+  position: relative;
+  min-height: 0;
+}
+
+.cs-studio3d__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* The canvas owns its gestures; the page must not scroll under the finger. */
+  touch-action: none;
+  cursor: grab;
+}
+
+.cs-studio3d__canvas:active {
+  cursor: grabbing;
+}
+
+/* Measurements float over the view instead of taking a panel. */
+.cs-studio3d__overlay {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: rgba(253, 250, 246, 0.78);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(6px);
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+/* ---- Properties column --------------------------------------------------- */
+
+.cs-studio3d__properties {
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.cs-studio3d__panel-stack {
+  overflow: hidden;
+}
+
+.cs-studio3d__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.cs-studio3d__field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.cs-studio3d__field-label {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+.cs-studio3d__hint {
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+}
+
+.cs-studio3d__notice {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--pink-soft);
+  color: var(--text-primary);
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+}
+
+.cs-studio3d__stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.cs-studio3d__stats dt {
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.cs-studio3d__stats dd {
+  margin-top: 2px;
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.cs-studio3d__warnings {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.cs-studio3d__warnings li {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-strong);
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+}
+
+.cs-studio3d__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.cs-studio3d__legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+}
+
+.cs-studio3d__legend span {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-sm);
+  box-shadow: inset 0 0 0 1px rgba(68, 56, 47, 0.16);
+}
+
+.cs-studio3d__thumb {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-strong);
+}
+
+.cs-studio3d__actions {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.cs-studio3d__captured {
+  color: var(--accent-strong);
+  font-size: var(--text-xs);
+  font-weight: 500;
+}
+
+/* ---- Unavailable --------------------------------------------------------- */
+
+.cs-viewport__unavailable {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-7) var(--space-6);
+  text-align: center;
+  justify-items: center;
+  align-content: center;
+}
+
+.cs-viewport__unavailable h2 {
+  font-size: var(--text-lg);
+}
+
+.cs-viewport__unavailable p {
+  max-width: 52ch;
+  color: var(--text-secondary);
+  line-height: var(--leading-snug);
+}
+
+.cs-viewport__detail {
+  font-family: ui-monospace, 'SFMono-Regular', 'Cascadia Mono', monospace;
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+.cs-viewport__loading {
+  color: var(--text-tertiary);
+}
+
+/* ---- iPad landscape ------------------------------------------------------ */
+
+@media (max-width: 1179px) {
+  .cs-studio3d {
+    min-height: calc(100vh - 2 * var(--space-6) - var(--safe-top));
+  }
+
+  .cs-studio3d__body {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+}
+
+/* ---- iPad portrait and narrow -------------------------------------------- */
+
+@media (max-width: 1023px) {
+  .cs-studio3d {
+    /* Below this width the column would be too narrow to be useful, so the
+       properties move under the viewport and the page scrolls normally. */
+    min-height: 0;
+  }
+
+  .cs-studio3d__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cs-studio3d__stage {
+    min-height: 0;
+  }
+
+  .cs-studio3d__canvas-wrap {
+    height: 52vh;
+    min-height: 300px;
+  }
+
+  .cs-studio3d__properties {
+    overflow: visible;
+  }
+}
+
+@media (max-width: 759px) {
+  .cs-studio3d__canvas-wrap {
+    height: 44vh;
+    min-height: 260px;
+  }
+
+  .cs-studio3d__grid,
+  .cs-studio3d__stats {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cs-studio3d__header-actions {
+    width: 100%;
+  }
+}

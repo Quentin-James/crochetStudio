@@ -1,0 +1,253 @@
+/* The row list: a dense, spreadsheet-like editor that still has to be usable
+   with a finger, so every control clears 30px and the columns drop out in order
+   of importance as the screen narrows. */
+
+.cs-rows {
+  display: grid;
+  gap: var(--space-4);
+}
+
+/* ---- Section ------------------------------------------------------------- */
+
+.cs-section__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.cs-section__title {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cs-section__tools {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: none;
+}
+
+.cs-section__name {
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: left;
+  border-radius: var(--radius-sm);
+}
+
+.cs-section__name:hover {
+  color: var(--accent-strong);
+}
+
+.cs-section__name-input {
+  min-height: 32px;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--accent-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+}
+
+.cs-section__meta {
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+}
+
+.cs-section__notes {
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+}
+
+.cs-section__empty {
+  margin-top: var(--space-3);
+  color: var(--text-tertiary);
+  font-size: var(--text-sm);
+}
+
+.cs-section__foot {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-top: var(--space-3);
+}
+
+/* ---- Rows ---------------------------------------------------------------- */
+
+.cs-rows__list {
+  display: grid;
+  gap: 2px;
+  margin-top: var(--space-3);
+}
+
+.cs-row {
+  display: grid;
+  /* done · n° · mailles · maille · instruction · couleur · note · verrou · suppr */
+  grid-template-columns: 28px 44px 64px 92px minmax(0, 1fr) 84px 130px 32px 32px;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-md);
+  transition: background-color var(--duration-fast) var(--ease-soft);
+}
+
+.cs-row:nth-child(odd) {
+  background: var(--cream-soft);
+}
+
+.cs-row:hover {
+  background: var(--pink-soft);
+}
+
+.cs-row--locked {
+  box-shadow: inset 2px 0 0 var(--accent-strong);
+}
+
+.cs-row--done .cs-row__instruction,
+.cs-row--done .cs-row__index {
+  color: var(--text-tertiary);
+  text-decoration: line-through;
+}
+
+.cs-row__done {
+  display: grid;
+  place-items: center;
+}
+
+.cs-row__done input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--accent-strong);
+}
+
+.cs-row__index {
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.cs-row__count,
+.cs-row__note {
+  min-height: 32px;
+  padding: 0 var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  font-size: var(--text-sm);
+}
+
+.cs-row__count {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.cs-row__count:hover,
+.cs-row__note:hover {
+  border-color: var(--border-strong);
+}
+
+.cs-row__count:focus,
+.cs-row__note:focus {
+  border-color: var(--accent-strong);
+  box-shadow: 0 0 0 2px var(--pink-soft);
+}
+
+.cs-row__stitch .cs-input {
+  min-height: 32px;
+  padding-right: var(--space-5);
+  font-size: var(--text-sm);
+}
+
+.cs-row__stitch .cs-select__chevron {
+  right: var(--space-2);
+}
+
+.cs-row__instruction {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cs-row__shaping {
+  flex: none;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.cs-row__shaping--increase {
+  background: #e3ead8;
+  color: #55663c;
+}
+
+.cs-row__shaping--decrease {
+  background: #f0dcd8;
+  color: #8f4e46;
+}
+
+.cs-row__note {
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+}
+
+.cs-row__action {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+}
+
+.cs-row--locked .cs-row__action:first-of-type {
+  color: var(--accent-strong);
+}
+
+.cs-row__action:hover {
+  background: var(--surface-raised);
+  color: var(--text-primary);
+}
+
+.cs-row__action--danger:hover {
+  color: #a7625a;
+}
+
+/* ---- Responsive ---------------------------------------------------------- */
+
+@media (max-width: 1279px) {
+  /* The note is the first thing to go: it is the least often used. */
+  .cs-row {
+    grid-template-columns: 28px 40px 60px 84px minmax(0, 1fr) 84px 32px 32px;
+  }
+
+  .cs-row__note {
+    display: none;
+  }
+}
+
+@media (max-width: 859px) {
+  .cs-row {
+    grid-template-columns: 28px 36px 56px minmax(0, 1fr) 72px 30px;
+  }
+
+  .cs-row__stitch,
+  .cs-row__action--danger {
+    display: none;
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Crochet Studio",
+  "version": "0.1.0",
+  "identifier": "fr.crochetstudio.app",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:5180",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Crochet Studio",
+        "width": 1320,
+        "height": 900,
+        "minWidth": 880,
+        "minHeight": 620,
+        "resizable": true,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico"
+    ],
+    "copyright": "© Quentin",
+    "category": "DeveloperTool",
+    "shortDescription": "Atelier de création au crochet",
+    "longDescription": "Concevez des robes, des sacs et des accessoires au crochet : motifs calculés depuis votre échantillon et rendu 3D interactif. Tout reste sur votre ordinateur."
+  }
+}

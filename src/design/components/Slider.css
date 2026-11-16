@@ -1,0 +1,72 @@
+.cs-slider {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.cs-slider__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.cs-slider__label {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+.cs-slider__value {
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.cs-slider__input {
+  width: 100%;
+  height: var(--touch-target);
+  margin: 0;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.cs-slider__input::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--beige);
+  box-shadow: var(--shadow-inset);
+}
+
+.cs-slider__input::-moz-range-track {
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--beige);
+}
+
+.cs-slider__input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -8px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-sm);
+}
+
+.cs-slider__input::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-sm);
+}
+
+.cs-slider__input:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
