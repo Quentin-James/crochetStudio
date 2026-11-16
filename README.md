@@ -15,8 +15,10 @@ your own gauge, and inspect the result in interactive 3D. Single user, local dat
 > Phase 5 — installable offline app (service worker, manifest, generated icons, opt-in updates)
 > and the workspace redesign of both studios, plus a free colour palette that can be placed per
 > section, per row or as stripes — and shows up on the 3D model.
-> Still open: the optional Tauri desktop shell for Windows.
-> See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+> Depuis : les mailles sont de vrais volumes en 3D (géométrie instanciée, une couleur par maille),
+> un plan de couleurs maille par maille dans l'atelier de motifs, et l'application de bureau
+> Windows (Tauri).
+> See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md).
 >
 > **The interface is in French; the code and docs are in English** — see ARCHITECTURE.md §4.
 

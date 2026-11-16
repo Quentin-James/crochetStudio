@@ -359,6 +359,38 @@ second one for the web, which is how a single-user app ends up with sync bugs it
 they have separate libraries. Backup export/import moves work between them — the same route already
 used between desktop and iPad.
 
+## 11b. Seeing the stitches, and colouring them
+
+**Stitches as geometry.** `three/model/stitches.ts` places one small mesh per stitch — position
+from its angle around the round, size from that round's own stitch width, orientation from the
+surface normal of the (possibly oval) cross-section. It is a single `InstancedMesh`, so twenty
+thousand stitches are one draw call; the cost is vertices, not draw calls, which is why there is a
+cap of 40 000 instances. Above it the field is **thinned evenly, never truncated** — a half-covered
+model would be a lie about where the stitches are — and the studio reports the real count next to
+the drawn one.
+
+The shaded-texture mode is still there and is one segmented control away: it costs almost nothing
+and remains the right choice on a weak device.
+
+**Per-stitch colour.** `PatternRow.stitchColors` is a *sparse* map from stitch index to palette id,
+null when the row is plain — a fully painted dress would otherwise carry 27 000 entries. The
+resolution order is one function, `resolveStitchColor`: stitch → row → section → main yarn. The
+chart, the written pattern and the 3D model all call it, which is why they cannot disagree.
+
+**The chart** (`features/pattern-studio/ChartEditor.tsx`) is a canvas, not a grid of DOM nodes: a
+dress is 20 000 cells. A drag paints onto the canvas immediately for feel, accumulates the cells,
+and commits **one** change to the pattern on pointer-up — one write, one undo step, instead of
+forty. Row 1 is at the bottom, as a crochet chart is read.
+
+Two bugs worth remembering from this work:
+
+- **Double colour conversion made every model nearly black.** `THREE.Color.set()` already converts
+  sRGB into the renderer's working space; calling `convertSRGBToLinear()` afterwards converted it
+  twice, and a dark brown came out at a twentieth of its brightness. `buildMesh.test.ts` now pins
+  the numeric value of a vertex colour.
+- **`setPointerCapture` must never be allowed to abort a stroke.** It is an optimisation for
+  dragging off-canvas; wrapped in `try`, because an environment without it should still paint.
+
 ## 12. Measurements are the interface to the model
 
 Anything the 3D model should respond to belongs in `CATEGORY_DEFINITIONS`, not in a renderer
